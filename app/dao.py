@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from typing import Dict, Sequence
 
-from fastapi import UploadFile, HTTPException
+from fastapi import UploadFile, HTTPException, status
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, insert, select
@@ -31,7 +31,7 @@ class DocumentsDAO:
                 await session.commit()
                 logger.info("Запись добавили(upload)!")
             except Exception:
-                raise HTTPException(status_code=503, detail="Ошибка во время добавления записи в БД, попробуйте позже!")
+                raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Ошибка во время добавления записи в БД, попробуйте позже!")
 
         with open(f"app/doc_static/images/{id_doc}.webp", "wb+") as file:
             shutil.copyfileobj(file_uploaded.file, file)
@@ -53,7 +53,7 @@ class DocumentsDAO:
 
             except Exception:
                 logger.warning("Почему-то данные не удалились(delete)!")
-                raise HTTPException(status_code=503, detail="Ошибка во время удаления записей в БД, попробуйте позже!")
+                raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Ошибка во время удаления записей в БД, попробуйте позже!")
 
         try:
             os.remove(f"app/doc_static/images/{id_doc}.webp")
@@ -87,7 +87,7 @@ class DocTextDAO:
 
         except Exception:
             logger.warning("Текст переведен, но не добавлен в БД!")
-            raise HTTPException(status_code=503, detail="Текст не был добавлен в БД!")
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Текст не был добавлен в БД!")
 
     @classmethod
     async def getter_text(cls, id_doc: PositiveInt, session: AsyncSession) -> dict:
@@ -97,7 +97,7 @@ class DocTextDAO:
             logger.info("Запрос на возврат текста прошел(getter_text)!")
         except Exception:
             logger.warning("Ошибка, запрос на получение текста не прошел!")
-            raise HTTPException(status_code=503, detail="Ошибка сервера, текст не получен!")
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Ошибка сервера, текст не получен!")
 
         if result.fetchone() is None:
             return {"warning": "Текст с данным id не найден, используйте метод get_text для его создания!"}

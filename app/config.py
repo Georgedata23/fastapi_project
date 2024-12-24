@@ -1,7 +1,8 @@
 from typing import Literal
 
 from pydantic import model_validator, Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST"]
@@ -38,9 +39,13 @@ class Settings(BaseSettings):
         )
         return values
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8")
 
-    class Config:
-        env_file = ".env"
+
+    # class Config: Устарело!
+    #     env_file = ".env"
 
 settings = Settings()
 
