@@ -1,1 +1,9 @@
-2024-12-24 10:37:41,396 : INFO : root: logging is working!
+2024-12-24 19:49:55,739 : INFO : root: logging is working!
+2024-12-24 19:49:55,971 : INFO : root: Отработал get_session!
+2024-12-24 19:49:55,993 : INFO : root: Запрос на возврат текста прошел(getter_text)!
+2024-12-24 19:49:55,996 : INFO : root: Отработал get_session!
+2024-12-24 19:49:56,016 : INFO : root: Запрос на возврат текста прошел(getter_text)!
+2024-12-24 19:49:56,018 : INFO : root: Отработал get_session!
+2024-12-24 19:49:56,040 : INFO : root: Запрос на возврат текста прошел(getter_text)!
+2024-12-24 19:49:56,042 : INFO : root: Отработал get_session!
+2024-12-24 19:49:56,070 : INFO : root: Запрос на возврат текста прошел(getter_text)!

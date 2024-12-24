@@ -22,16 +22,15 @@ class DocumentsDAO:
             logger.info("Использовали занятый id для загрузки!")
             return {"warning": "Данный id занят, попробуйте другой!"}
 
-        else:
-            session.add(Documents(id=id_doc,
-                        path="app/doc_static/images",
-                        date=datetime.now())
-                        )
-            try:
-                await session.commit()
-                logger.info("Запись добавили(upload)!")
-            except Exception:
-                raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Ошибка во время добавления записи в БД, попробуйте позже!")
+        session.add(Documents(id=id_doc,
+                    path="app/doc_static/images",
+                    date=datetime.now())
+                    )
+        try:
+            await session.commit()
+            logger.info("Запись добавили(upload)!")
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Ошибка во время добавления записи в БД, попробуйте позже!")
 
         with open(f"app/doc_static/images/{id_doc}.webp", "wb+") as file:
             shutil.copyfileobj(file_uploaded.file, file)
@@ -47,7 +46,7 @@ class DocumentsDAO:
         else:
             try:
                 await session.execute(delete(Documents_text).filter(Documents_text.id_doc == id_doc))
-                await session.execute(delete(Documents).filter(Documents.id == id_doc))
+                # await session.execute(delete(Documents).filter(Documents.id == id_doc))Удаляется через каскад (models.py)
                 await session.commit()
                 logger.info("Запись удалена(delete)!")
 
@@ -87,17 +86,19 @@ class DocTextDAO:
 
         except Exception:
             logger.warning("Текст переведен, но не добавлен в БД!")
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Текст не был добавлен в БД!")
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                                detail="Текст не был добавлен в БД!")
 
     @classmethod
     async def getter_text(cls, id_doc: PositiveInt, session: AsyncSession) -> dict:
 
         try:
-            result = await session.execute(select(Documents_text.text).filter(Documents_text.id_doc == id_doc))
+            result = await session.execute(select(Documents_text.text).filter(Documents_text.id == id_doc))
             logger.info("Запрос на возврат текста прошел(getter_text)!")
         except Exception:
             logger.warning("Ошибка, запрос на получение текста не прошел!")
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Ошибка сервера, текст не получен!")
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                                detail="Ошибка сервера, текст не получен!")
 
         if result.fetchone() is None:
             return {"warning": "Текст с данным id не найден, используйте метод get_text для его создания!"}

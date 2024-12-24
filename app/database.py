@@ -21,8 +21,9 @@ async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit
 
 async def get_session() -> AsyncSession:
     async with async_session_maker() as session:
-        logger.info("Отрабатывает get_session!")
+        logger.info("Отработал get_session!")
         yield session
+
 
 class Base(DeclarativeBase):
     pass
