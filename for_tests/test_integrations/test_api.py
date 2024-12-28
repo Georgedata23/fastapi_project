@@ -20,3 +20,7 @@ async def test_get_text(client: AsyncClient, id: PositiveInt, status_code, text)
 
 
 
+
+
+
+

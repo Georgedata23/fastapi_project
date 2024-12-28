@@ -70,16 +70,10 @@ class DocumentsDAO:
 
         cls.check_available_file(id_doc)
 
-        try:
-            await session.execute(delete(Documents_text).filter(Documents_text.id_doc == id_doc))
-            # await session.execute(delete(Documents).filter(Documents.id == id_doc))Удаляется через каскад (models.py)
-            await session.commit()
-            logger.info("Запись удалена(delete)!")
-
-        except Exception:
-            logger.warning("Почему-то данные не удалились(delete)!")
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                                detail="Ошибка во время удаления записей в БД, попробуйте позже!")
+        await session.execute(delete(Documents_text).filter(Documents_text.id_doc == id_doc))
+        # await session.execute(delete(Documents).filter(Documents.id == id_doc))Удаляется через каскад (models.py)
+        await session.commit()
+        logger.info("Запись удалена(delete)!")
 
         cls.remove_and_exception(id_doc)
 
@@ -129,13 +123,9 @@ class DocTextDAO:
     @classmethod
     async def getter_text(cls, id_doc: PositiveInt, session: AsyncSession) -> JSONResponse:
 
-        try:
-            result = await session.execute(select(Documents_text.text).filter(Documents_text.id == id_doc))
-            logger.info("Запрос на возврат текста прошел(getter_text)!")
-        except Exception:
-            logger.warning("Ошибка, запрос на получение текста не прошел!")
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                                detail="Ошибка сервера, текст не получен!")
+        result = await session.execute(select(Documents_text.text).filter(Documents_text.id == id_doc))
+        logger.info("Запрос на возврат текста прошел(getter_text)!")
+
         a = result.first()
 
         if not a:
