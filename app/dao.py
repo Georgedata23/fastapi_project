@@ -136,9 +136,11 @@ class DocTextDAO:
         a = result.first()
 
         if not a:
-            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content="Текст с данным id не найден, используйте метод get_text для его создания!")
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
+                                content="Текст с данным id не найден, используйте метод get_text для его создания!")
         else:
-            return JSONResponse(status_code=status.HTTP_200_OK, content=a.text)
+            return JSONResponse(status_code=status.HTTP_200_OK,
+                                content=a.text)
 
 
 
