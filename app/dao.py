@@ -133,11 +133,12 @@ class DocTextDAO:
             logger.warning("Ошибка, запрос на получение текста не прошел!")
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail="Ошибка сервера, текст не получен!")
+        a = result.first()
 
-        if result.fetchone() is None:
-            return JSONResponse(status_code=status.HTTP_200_OK, content="Текст с данным id не найден, используйте метод get_text для его создания!")
+        if not a:
+            return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content="Текст с данным id не найден, используйте метод get_text для его создания!")
         else:
-            return JSONResponse(status_code=status.HTTP_200_OK, content=result.scalars().first())
+            return JSONResponse(status_code=status.HTTP_200_OK, content=a.text)
 
 
 

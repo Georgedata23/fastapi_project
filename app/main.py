@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, Depends
 from pydantic import PositiveInt
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.responses import JSONResponse
 
 from app.dao import DocumentsDAO, DocTextDAO
 from app.database import get_session
@@ -28,7 +29,7 @@ async def upload_doc(id_doc: PositiveInt, file: UploadFile, session: AsyncSessio
     return await DocumentsDAO.upload(id_doc, file, session)
 
 @app.delete("/delete_doc", tags=["Документы"])
-async def delete_doc(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> dict:
+async def delete_doc(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> JSONResponse:
     """
     Позволяет удалить изображение и запись по id
 
@@ -46,7 +47,7 @@ async def delete_doc(id_doc: PositiveInt, session: AsyncSession = Depends(get_se
     return await DocumentsDAO.delete(id_doc, session)
 
 @app.post("/doc_analyse", tags=["Документы_текст"])
-async def doc_analyse(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> dict:
+async def doc_analyse(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> JSONResponse:
     """
     Позволяет прочитать текст с изображения и добавить его в БД
 
@@ -62,7 +63,7 @@ async def doc_analyse(id_doc: PositiveInt, session: AsyncSession = Depends(get_s
     return await DocTextDAO.analyse(id_doc, session)
 
 @app.get("/get_text", tags=["Документы_текст"])
-async def get_text(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> dict:
+async def get_text(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> JSONResponse:
     """
     Возвращает текст с картинки из БД
 
@@ -75,4 +76,6 @@ async def get_text(id_doc: PositiveInt, session: AsyncSession = Depends(get_sess
     - **200**: Возвращает текст из БД
     - **503**: Ошибка сервера, текст не получен
     """
-    return await DocTextDAO.getter_text(id_doc, session)
+    result = await DocTextDAO.getter_text(id_doc, session)
+    return result
+    # return await DocTextDAO.getter_text(id_doc, session)

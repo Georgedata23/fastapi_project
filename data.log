@@ -1,8 +1,1 @@
-2024-12-26 12:47:42,782 : INFO : root: logging is working!
-2024-12-26 12:47:43,013 : INFO : root: Отработал get_session!
-2024-12-26 12:47:43,037 : INFO : root: Запрос на возврат текста прошел(getter_text)!
-2024-12-26 12:47:43,088 : INFO : root: Отработал get_session!
-2024-12-26 12:47:43,109 : INFO : root: Запрос на возврат текста прошел(getter_text)!
-2024-12-26 12:47:43,114 : INFO : root: Отработал get_session!
-2024-12-26 12:47:43,134 : INFO : root: Запрос на возврат текста прошел(getter_text)!
-2024-12-26 12:47:43,139 : INFO : root: Отработал get_session!
+2024-12-28 13:43:46,774 : INFO : root: logging is working!

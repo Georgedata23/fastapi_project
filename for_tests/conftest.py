@@ -57,21 +57,23 @@ async def prepare_database():
         await session.commit()
 
 
-# @pytest.fixture
-# async def async_db_session():
-#     async with async_session_maker() as session:
-#         yield session
+@pytest.fixture
+async def async_db_session():
+    async with async_session_maker() as session:
+        yield session
 
 
 
-@pytest.fixture(scope="function")
-def client():
+@pytest.fixture(scope="function", autouse=True)
+def client(async_db_session):
 
     def override():
+        async_db_session
 
 
     fastapi_app.dependency_overrides[get_session] = override
-    with TestClient(app=fastapi_app, base_url="http://test") as clients:
+
+    with AsyncClient(app=fastapi_app, base_url="http://test") as clients:
         yield clients
 
 
