@@ -6,10 +6,9 @@ from fastapi.testclient import TestClient
 from app.dao import DocTextDAO
 from app.database import get_session
 from app.main import app
-from for_tests.conftest import session
 
 
-async def test_getter_test(aclient: AsyncClient, session: AsyncSession):
+async def getter_test(aclient: AsyncClient, session: AsyncSession):
 
     def get_session_override():
         return session

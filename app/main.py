@@ -27,7 +27,7 @@ async def upload_doc(id_doc: PositiveInt, file: UploadFile, session: AsyncSessio
     """
     return await DocumentsDAO.upload(id_doc, file, session)
 
-@app.get("/delete_doc", tags=["Документы"])
+@app.delete("/delete_doc", tags=["Документы"])
 async def delete_doc(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> dict:
     """
     Позволяет удалить изображение и запись по id
@@ -38,14 +38,14 @@ async def delete_doc(id_doc: PositiveInt, session: AsyncSession = Depends(get_se
 
 
     ### Возможные ответы
-    - **200**: Изображние с данным id не найдено
+    - **200**: Изображение с данным id не найдено
     - **200**: Запись и файл удалены
     - **200**: Кто-то изменил/удалил файл во время выполнения запроса, записи стёрты!
     - **503**: Ошибка во время удаления записей в БД
     """
     return await DocumentsDAO.delete(id_doc, session)
 
-@app.get("/doc_analyse", tags=["Документы_текст"])
+@app.post("/doc_analyse", tags=["Документы_текст"])
 async def doc_analyse(id_doc: PositiveInt, session: AsyncSession = Depends(get_session)) -> dict:
     """
     Позволяет прочитать текст с изображения и добавить его в БД

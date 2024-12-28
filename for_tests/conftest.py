@@ -3,17 +3,22 @@ from datetime import datetime
 import asyncio
 
 import pytest
-from sqlalchemy import insert
+from sqlalchemy import insert, NullPool
 from fastapi.testclient import TestClient
-from httpx import AsyncClient, ASGITransport
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
-from app.database import Base, async_session_maker, engine
+# from app.main import get_session
+from app.database import Base, async_session_maker, engine, get_session
 from app.models import Documents, Documents_text
 from app.main import app as fastapi_app
 
+engine = create_async_engine(settings.TEST_DATABASE_URL, poolclass=NullPool)
+async_session_maker = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
-@pytest.fixture(scope="session", autouse=True) # Заменили с помощью asyncio_default_fixture_loop_scope в pytest.ini
+
+@pytest.fixture(scope="session", autouse=True)
 def event_loop(request):
 
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -52,16 +57,24 @@ async def prepare_database():
         await session.commit()
 
 
+# @pytest.fixture
+# async def async_db_session():
+#     async with async_session_maker() as session:
+#         yield session
+
+
+
 @pytest.fixture(scope="function")
-async def aclient():
-    async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url="http://test") as ac:
-        yield ac
+def client():
+
+    def override():
 
 
-@pytest.fixture(scope="session", autouse=True)
-async def session():
-    async with async_session_maker() as session:
-        yield session
+    fastapi_app.dependency_overrides[get_session] = override
+    with TestClient(app=fastapi_app, base_url="http://test") as clients:
+        yield clients
+
+
 
 
 
