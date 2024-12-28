@@ -1,3 +1,5 @@
+from typing import AsyncGenerator
+
 from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
@@ -19,10 +21,20 @@ elif settings.MODE == "DEV":
 
 async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-async def get_session() -> AsyncSession:
-    async with async_session_maker() as session:
-        logger.info("Отработал get_session!")
-        yield session
+# async def get_session() -> AsyncSession:
+#     async with async_session_maker() as session:
+#         logger.info("Отработал get_session!")
+#         yield session
+
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker.begin() as session:
+        try:
+            yield session
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
 
 class Base(DeclarativeBase):

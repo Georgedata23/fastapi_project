@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 import asyncio
 
+import pytest_asyncio
+from httpx import AsyncClient, ASGITransport
 import pytest
 from sqlalchemy import insert, NullPool
 from fastapi.testclient import TestClient
@@ -14,11 +16,11 @@ from app.database import Base, async_session_maker, engine, get_session
 from app.models import Documents, Documents_text
 from app.main import app as fastapi_app
 
-engine = create_async_engine(settings.TEST_DATABASE_URL, poolclass=NullPool)
-async_session_maker = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+engine_2 = create_async_engine(settings.TEST_DATABASE_URL, poolclass=NullPool)
+async_session_maker_2 = sessionmaker(bind=engine_2, class_=AsyncSession, expire_on_commit=False)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest_asyncio.fixture(scope="session", autouse=True)
 def event_loop(request):
 
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -57,23 +59,24 @@ async def prepare_database():
         await session.commit()
 
 
-@pytest.fixture
+
+@pytest_asyncio.fixture(scope="function", autouse=True)
 async def async_db_session():
-    async with async_session_maker() as session:
+    async with async_session_maker_2() as session:
         yield session
 
 
 
-@pytest.fixture(scope="function", autouse=True)
-def client(async_db_session):
+@pytest_asyncio.fixture(scope="function", autouse=True)
+async def client(async_db_session):
 
     def override():
-        async_db_session
+        yield async_db_session
 
 
     fastapi_app.dependency_overrides[get_session] = override
 
-    with AsyncClient(app=fastapi_app, base_url="http://test") as clients:
+    async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url="http://test") as clients:
         yield clients
 
 
