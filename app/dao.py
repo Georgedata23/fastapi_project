@@ -114,12 +114,14 @@ class DocTextDAO:
                                    text=text_from_img))
             await session.commit()
             logger.info("Текст добавлен в БД!")
-            return JSONResponse(status_code=status.HTTP_200_OK, content="Текст прочитан и добавлен в БД!")
-
         except Exception:
             logger.warning("Текст переведен, но не добавлен в БД!")
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail="Текст не был добавлен в БД!")
+
+        return JSONResponse(status_code=status.HTTP_200_OK, content="Текст прочитан и добавлен в БД!")
+
+
 
 
 
