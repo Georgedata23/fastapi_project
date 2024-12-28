@@ -1,6 +1,5 @@
 
 import pytest
-import pytest_asyncio
 from httpx import AsyncClient
 from pydantic import PositiveInt
 
@@ -14,7 +13,11 @@ async def test_get_text(client: AsyncClient, id: PositiveInt, status_code, text)
     assert resp.json() == text
 
 
-async def test_doc_analyse(client: AsyncClient, id: PositiveInt):
+@pytest.mark.parametrize("id, status_code, text", [(12, 200, "Текст прочитан и добавлен в БД!")])
+async def test_doc_analyse(client: AsyncClient, id: PositiveInt, status_code, text):
+    resp = await client.get("/doc_analyse", params={"id_doc": id})
+    assert resp.status_code == status_code
+    # assert resp.content == text
 
 
 
