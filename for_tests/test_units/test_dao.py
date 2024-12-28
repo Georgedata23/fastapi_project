@@ -5,7 +5,7 @@ from httpx import AsyncClient
 from pydantic import PositiveInt
 import pytest
 from pytest import raises
-from sqlalchemy import insert
+from sqlalchemy import insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -95,8 +95,11 @@ async def test_remove_exception():
     assert exc.value.detail == "Кто-то изменил/удалил файл во время выполнения запроса, записи стёрты!"
 
 
-async def test_delete_2():
-    text = await DocumentsDAO.delete(id_doc=id, session=async_db_session)
+async def test_delete_2(async_db_session: AsyncSession):
+    await async_db_session.execute(delete(Documents_text).filter(Documents_text.id_doc == 10000))
+    await async_db_session.commit()
+
+    text = await DocumentsDAO.delete(id_doc=10000, session=async_db_session)
     assert text.status_code == 200
     assert text.body.decode('utf-8').strip('"') == "Записи и файл были удалены!"
 
