@@ -22,7 +22,7 @@ class DocumentsDAO:
         with open(f"app/doc_static/images/{id_doc}.webp", "wb+") as file:
             shutil.copyfileobj(file_uploaded.file, file)
         logger.info("Изображение добавлено в БД!")
-        return JSONResponse(status_code=status.HTTP_200_OK, content="Запись и изображение сохранены в БД и на диск!")
+
 
     @staticmethod
     def check_available_file(id_doc: PositiveInt):
@@ -61,6 +61,7 @@ class DocumentsDAO:
                                 detail="Ошибка во время добавления записи в БД, попробуйте позже!")
 
         cls.copyfile(id_doc, file_uploaded)
+        return JSONResponse(status_code=status.HTTP_200_OK, content="Запись и изображение сохранены в БД и на диск!")
 
 
 

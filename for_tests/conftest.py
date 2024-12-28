@@ -33,7 +33,7 @@ async def prepare_database():
 
     assert settings.MODE == "TEST"
 
-    async with engine.begin() as conn:
+    async with engine_2.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
@@ -48,7 +48,7 @@ async def prepare_database():
     for doc in docs:
         doc["date"] = datetime.strptime(doc["date"], "%Y-%m-%d")
 
-    async with async_session_maker() as session:
+    async with async_session_maker_2() as session:
 
         add_docs = insert(Documents).values(docs)
         add_docs_text = insert(Documents_text).values(docs_text)
@@ -70,7 +70,13 @@ async def prepare_database():
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def async_db_session():
     async with async_session_maker_2() as session:
-        yield session
+        try:
+            yield session
+        except:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
 
 
