@@ -1,3 +1,5 @@
+import os
+
 from fastapi import HTTPException, UploadFile
 from httpx import AsyncClient
 from pydantic import PositiveInt
@@ -51,3 +53,50 @@ async def test_upload(async_db_session: AsyncSession):
         result = await DocumentsDAO.upload(id_doc=117, file_uploaded=f, session=async_db_session)
         assert result.status_code == 200
         assert result.body.decode('utf-8').strip('"') == "Запись и изображение сохранены в БД и на диск!"
+    os.remove("app/doc_static/images/117.webp")
+
+
+async def test_upload_2(async_db_session: AsyncSession):
+    with open("for_tests/data_up/abcdef.webp", "wb+") as file_up:
+        f = UploadFile(file_up)
+        result = await DocumentsDAO.upload(id_doc=1, file_uploaded=f, session=async_db_session)
+        assert result.status_code == 200
+        assert result.body.decode('utf-8').strip('"') == "Данный id занят, попробуйте другой!"
+
+
+async def test_upload_3(async_db_session: AsyncSession):
+    await async_db_session.execute(insert(Documents).values(id=101,
+                                                            path="app/doc_static/images"))
+    with raises(HTTPException) as exc:
+        with open("for_tests/data_up/abcdef.webp", "wb+") as file_up:
+            f = UploadFile(file_up)
+            result = await DocumentsDAO.upload(id_doc=101, file_uploaded=f, session=async_db_session)
+            assert result.status_code == 200
+    assert exc.value.detail == "Ошибка во время добавления записи в БД, попробуйте позже!"
+
+@pytest.mark.parametrize("id", [1, 5, 7])
+async def test_delete(id, async_db_session: AsyncSession):
+    text = await DocumentsDAO.delete(id_doc=id, session=async_db_session)
+    assert text.status_code == 200
+    assert text.body.decode('utf-8').strip('"') == "Записи и файл были удалены!"
+
+
+async def test_check_available():
+    with raises(HTTPException) as exc:
+        text = await DocumentsDAO.check_available_file(2)
+    assert exc.value.status_code == 404
+    assert exc.value.detail == "Изображение с id: 2 не найдено!"
+
+
+async def test_remove_exception():
+    with raises(HTTPException) as exc:
+        await DocumentsDAO.remove_and_exception(12345)
+    assert exc.value.status_code == 404
+    assert exc.value.detail == "Кто-то изменил/удалил файл во время выполнения запроса, записи стёрты!"
+
+
+async def test_delete_2():
+    text = await DocumentsDAO.delete(id_doc=id, session=async_db_session)
+    assert text.status_code == 200
+    assert text.body.decode('utf-8').strip('"') == "Записи и файл были удалены!"
+
