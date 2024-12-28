@@ -1,17 +1,17 @@
 import json
+import shutil
 from datetime import datetime
 import asyncio
+import os
 
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 import pytest
 from sqlalchemy import insert, NullPool
-from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
-# from app.main import get_session
 from app.database import Base, async_session_maker, engine, get_session
 from app.models import Documents, Documents_text
 from app.main import app as fastapi_app
@@ -57,6 +57,13 @@ async def prepare_database():
         await session.execute(add_docs_text)
 
         await session.commit()
+
+    source_dir = "for_tests/data"
+    destination_dir = "app/doc_static/images"
+
+    for filename in os.listdir(source_dir):
+        source_file = os.path.join(source_dir, filename)
+        shutil.copy(source_file, destination_dir)
 
 
 
