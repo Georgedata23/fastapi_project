@@ -14,6 +14,8 @@ async def test_get_text(client: AsyncClient, id: PositiveInt, status_code, text)
     assert resp.json() == text
 
 
+async def test_doc_analyse(client: AsyncClient, id: PositiveInt):
+
 
 
 

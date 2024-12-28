@@ -30,6 +30,7 @@ class DocumentsDAO:
             logger.info("Не нашли изображение для удаления!")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Изображение с id: {id_doc} не найдено!")
 
+
     @staticmethod
     def remove_and_exception(id_doc: PositiveInt):
         try:
@@ -38,7 +39,6 @@ class DocumentsDAO:
             logger.warning("Запись удалена, изображение нет(delete)!")
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Кто-то изменил/удалил файл во время выполнения запроса, записи стёрты!")
-
 
 
 
