@@ -2,14 +2,9 @@ import os
 from pathlib import Path
 
 import pytest
-from fastapi import UploadFile
 from httpx import AsyncClient
 from pydantic import PositiveInt
-from sqlalchemy.ext.asyncio import AsyncSession
-import json
-from sqlalchemy import insert
 
-from app.models import Documents
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("id, status_code, text", [(1, 200, "La-la-la"),
