@@ -12,7 +12,7 @@ app = FastAPI(title="Image_to_text",
                           " на удаление - doc_delete, считывание - doc_analyze, вывод клиенту - get_text!")
 
 @app.post("/upload_doc", tags=["Документы"])
-async def upload_doc(id_doc: PositiveInt, file: UploadFile, session: AsyncSession = Depends(get_session)) -> dict:
+async def upload_doc(id_doc: PositiveInt, file: UploadFile, session: AsyncSession = Depends(get_session)) -> JSONResponse:
     """
     Позволяет загружать изображение на диск и создавать запись(по id).
 
