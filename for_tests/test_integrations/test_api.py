@@ -39,6 +39,12 @@ async def test_upload_doc(client: AsyncClient):
         assert resp.json() == "Запись и изображение сохранены в БД и на диск!"
     os.remove("app/doc_static/images/888.webp")
 
+@pytest.mark.asyncio
+async def test_delete_doc(client: AsyncClient):
+    resp = await client.delete("/delete_doc", params={"id_doc": 98})
+    assert resp.status_code == 200
+    assert resp.json() == "Записи и файл были удалены!"
+
 
 
 
