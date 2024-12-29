@@ -77,4 +77,3 @@ async def get_text(id_doc: PositiveInt, session: AsyncSession = Depends(get_sess
     - **503**: Ошибка сервера, текст не получен
     """
     return await DocTextDAO.getter_text(id_doc, session)
-    # return await DocTextDAO.getter_text(id_doc, session)
