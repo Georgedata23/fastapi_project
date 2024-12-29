@@ -67,6 +67,8 @@ async def prepare_database():
 
 
 
+
+
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def async_db_session():
     async with async_session_maker_2() as session:
@@ -91,6 +93,8 @@ async def client(async_db_session):
 
     async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url="http://test") as clients:
         yield clients
+        await clients.aclose()
+
 
 
 
