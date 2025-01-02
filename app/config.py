@@ -9,14 +9,14 @@ class Settings(BaseSettings):
 
     DB_PORT: str
     DB_USER: str
-    DB_PASSWORD: int
+    DB_PASSWORD: str
     DB_NAME: str
     DB_HOST: str
     DATABASE_URL: str = Field(default="")
 
     TEST_DB_PORT: str
     TEST_DB_USER: str
-    TEST_DB_PASSWORD: int
+    TEST_DB_PASSWORD: str
     TEST_DB_NAME: str
     TEST_DB_HOST: str
     TEST_DATABASE_URL: str = Field(default="")
