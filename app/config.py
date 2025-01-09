@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     TEST_DB_HOST: str
     TEST_DATABASE_URL: str = Field(default="")
 
+    LOCAL_RABBIT: str
+    RABBIT: str
+
 
 
 
